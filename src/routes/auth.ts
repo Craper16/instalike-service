@@ -6,6 +6,7 @@ import {
   GetLoggedInUserData,
   RefreshUserTokens,
   ResendVerificationCode,
+  ResetPassword,
   SigninUser,
   SignupUser,
   VerifyUser,
@@ -24,6 +25,8 @@ router.post('/signin', SigninUser);
 router.put('/verify', VerifyUser);
 
 router.put('/resend-verification-code', ResendVerificationCode);
+
+router.put('/reset-password', ResetPassword);
 
 router.get('/me', isAuth, GetLoggedInUserData);
 

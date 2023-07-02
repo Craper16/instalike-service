@@ -7,6 +7,7 @@ import {
   getLoggedInUserData,
   refreshUserTokens,
   resendVerificationCode,
+  resetPassword,
   signUp,
   signin,
   verify,
@@ -17,6 +18,7 @@ import {
   editUserProfileValidations,
   refreshValidations,
   resendVerificationValidation,
+  resetPasswordValidation,
   signinUserValidations,
   signupUserValidations,
   verifyUserValidations,
@@ -251,6 +253,64 @@ export const ResendVerificationCode: RequestHandler = async (
         fullName: resendVerification.user?.fullName,
       },
       message: 'Verification code sent successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const ResetPassword: RequestHandler = async (req, res, next) => {
+  const { email, newPassword, verificationCode } = req.body as {
+    email: string;
+    newPassword: string;
+    verificationCode: number;
+  };
+
+  const { error } = resetPasswordValidation.validate(req.body);
+
+  try {
+    if (error) {
+      const newError: ErrorResponse = {
+        message: error.message,
+        name: error.name,
+        status: 422,
+        data: {
+          message: error.message,
+          statusCode: 422,
+          data: error.details,
+        },
+      };
+      throw newError;
+    }
+
+    const resetPasswordResponse = await resetPassword({
+      email,
+      newPassword,
+      verificationCode,
+    });
+
+    if (resetPasswordResponse?.status !== 200) {
+      const error: ErrorResponse = {
+        message: resetPasswordResponse?.name!,
+        name: resetPasswordResponse?.name!,
+        status: resetPasswordResponse?.status!,
+        data: {
+          message: resetPasswordResponse?.message!,
+          statusCode: resetPasswordResponse?.status!,
+        },
+      };
+      throw error;
+    }
+
+    return res.status(resetPasswordResponse.status).json({
+      user: {
+        email: resetPasswordResponse.user?.email,
+        username: resetPasswordResponse.user?.username,
+        phoneNumber: resetPasswordResponse.user?.phoneNumber,
+        countryCode: resetPasswordResponse.user?.countryCode,
+        profilePicture: resetPasswordResponse.user?.profilePicture,
+        fullName: resetPasswordResponse.user?.fullName,
+      },
     });
   } catch (error) {
     next(error);

@@ -15,7 +15,8 @@ export const signupUserValidations = joi.object().keys({
       new Error(
         'Password must contain at least one lower case letter, one uppercase letter, at least 1 digit, at least one special character and minimum 8 characters'
       )
-    ),
+    )
+    .required(),
   countryCode: joi.string().required(),
   email: joi.string().email().trim().lowercase().required(),
   fullName: joi.string().required().trim(),
@@ -36,6 +37,21 @@ export const resendVerificationValidation = joi.object().keys({
   email: joi.string().email().trim().lowercase().required(),
 });
 
+export const resetPasswordValidation = joi.object().keys({
+  email: joi.string().email().trim().lowercase().required(),
+  newPassword: joi
+    .string()
+    .trim()
+    .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
+    .error(
+      new Error(
+        'Password must contain at least one lower case letter, one uppercase letter, at least 1 digit, at least one special character and minimum 8 characters'
+      )
+    )
+    .required(),
+  verificationCode: joi.number().required(),
+});
+
 export const changePasswordValidation = joi.object().keys({
   oldPassword: joi.string().required(),
   newPassword: joi
@@ -46,7 +62,8 @@ export const changePasswordValidation = joi.object().keys({
       new Error(
         'Password must contain at least one lower case letter, one uppercase letter, at least 1 digit, at least one special character and minimum 8 characters'
       )
-    ),
+    )
+    .required(),
 });
 
 export const refreshValidations = joi.object().keys({

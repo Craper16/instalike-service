@@ -341,6 +341,74 @@ export const resendVerificationCode = async ({ email }: { email: string }) => {
   }
 };
 
+export const resetPassword = async ({
+  email,
+  newPassword,
+  verificationCode,
+}: {
+  email: string;
+  verificationCode: number;
+  newPassword: string;
+}) => {
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return {
+        message: 'Invalid credentials',
+        name: 'Unauthorized',
+        status: 401,
+      };
+    }
+
+    const userVerificationCode = await VerificationCode.findOne({
+      userId: user._id,
+    });
+
+    if (!userVerificationCode) {
+      return {
+        message: 'Verification code does not exist',
+        name: 'Not Found',
+        status: 404,
+      };
+    }
+
+    if (userVerificationCode.alreadyUsed) {
+      return {
+        message: 'Verification code already used',
+        name: 'Already Used',
+        status: 403,
+      };
+    }
+
+    const verificationCodesMatch = compareSync(
+      verificationCode.toString(),
+      userVerificationCode.verificationCode
+    );
+
+    if (!verificationCodesMatch) {
+      return {
+        message: 'Wrong verification code',
+        name: 'Wrong Entry',
+        status: 409,
+      };
+    }
+
+    const hashedNewPassword = hashSync(newPassword, 12);
+
+    user.password = hashedNewPassword;
+
+    userVerificationCode.alreadyUsed = true;
+    await userVerificationCode.save();
+
+    const result = await user.save();
+
+    return { status: 200, user: result };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const getLoggedInUserData = async ({ userId }: { userId: string }) => {
   try {
     const user = await User.findById(userId);
