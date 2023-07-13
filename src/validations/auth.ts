@@ -42,7 +42,7 @@ export const resetPasswordValidation = joi.object().keys({
   newPassword: joi
     .string()
     .trim()
-    .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
+    .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*(),.?":{}|<>]).{8,}$/)
     .error(
       new Error(
         'Password must contain at least one lower case letter, one uppercase letter, at least 1 digit, at least one special character and minimum 8 characters'
@@ -67,7 +67,7 @@ export const changePasswordValidation = joi.object().keys({
 });
 
 export const refreshValidations = joi.object().keys({
-  refreshToken: joi.string().required(),
+  refreshToken: joi.string(),
 });
 
 export const editUserProfileValidations = joi.object().keys({

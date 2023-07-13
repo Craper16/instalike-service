@@ -16,6 +16,7 @@ import mongoose from 'mongoose';
 import authRoutes from './routes/auth';
 import { createTransport } from 'nodemailer';
 import * as jose from 'jose';
+import { GridFsStorage } from 'multer-gridfs-storage';
 
 export interface ErrorResponse extends Error {
   status: number;
@@ -38,7 +39,11 @@ mongoose.connection.on('connected', () => {
   });
 });
 
-export const upload = multer({ storage: memoryStorage() });
+const storage = new GridFsStorage({
+  url: process.env.DB_URI,
+});
+
+export const upload = multer({ storage });
 
 const app = express();
 
@@ -47,11 +52,15 @@ app.use(urlencoded({ extended: true }));
 app.use(cors());
 
 app.get('/file/:id', (req, res, next) => {
-  const fileId = req.params.id;
-  const downloadStream = bucket.openDownloadStream(
-    new mongoose.Types.ObjectId(fileId)
-  );
-  downloadStream.pipe(res);
+  try {
+    const fileId = req.params.id;
+    const downloadStream = bucket.openDownloadStream(
+      new mongoose.Types.ObjectId(fileId)
+    );
+    downloadStream.pipe(res);
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.use('/api/auth', authRoutes);

@@ -34,7 +34,7 @@ router.put('/me/change-password', isAuth, ChangeUserPassword);
 
 router.post('/refresh', RefreshUserTokens);
 
-router.put(
+router.post(
   '/me/edit-profile-picture',
   isAuth,
   upload.single('profilePicture'),
@@ -43,6 +43,6 @@ router.put(
 
 router.put('/me/edit-profile', isAuth, EditUserProfile);
 
-router.get('/:userId');
+router.get('/:userId', isAuth);
 
 export default router;

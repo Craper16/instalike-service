@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { User } from '../models/user';
 import { bucket, secret } from '../app';
-import { compare, compareSync, hashSync } from 'bcryptjs';
+import { compareSync, hashSync } from 'bcryptjs';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -13,6 +13,7 @@ import { VerificationCode } from '../models/verificationCode';
 import * as jose from 'jose';
 import { BlackListedToken } from '../models/blacklistedToken';
 import { REFRESH_TOKEN } from '../consts/constants';
+import dayjs from 'dayjs';
 
 export const signUp = async ({
   countryCode,
@@ -165,7 +166,9 @@ export const signin = async ({
 
     const { payload } = await jose.jwtDecrypt(access_token, secret);
 
-    const tokenExpirationDate = new Date(payload.exp! * 1000);
+    const tokenExpirationDate = dayjs(payload.exp! * 1000).format(
+      'YYYY-MM-DD HH:mm:ss'
+    );
 
     return {
       user,
@@ -264,8 +267,9 @@ export const verify = async ({
 
     const { payload } = await jose.jwtDecrypt(access_token, secret);
 
-    const tokenExpirationDate = new Date(payload.exp! * 1000);
-
+    const tokenExpirationDate = dayjs(payload.exp! * 1000).format(
+      'YYYY-MM-DD HH:mm:ss'
+    );
     if (login === 'true') {
       return {
         user: result,
@@ -370,14 +374,6 @@ export const resetPassword = async ({
         message: 'Verification code does not exist',
         name: 'Not Found',
         status: 404,
-      };
-    }
-
-    if (userVerificationCode.alreadyUsed) {
-      return {
-        message: 'Verification code already used',
-        name: 'Already Used',
-        status: 403,
       };
     }
 
@@ -543,8 +539,9 @@ export const refreshUserTokens = async ({
 
     const { payload } = await jose.jwtDecrypt(access_token, secret);
 
-    const tokenExpirationDate = new Date(payload.exp! * 1000);
-
+    const tokenExpirationDate = dayjs(payload.exp! * 1000).format(
+      'YYYY-MM-DD HH:mm:ss'
+    );
     new BlackListedToken({
       blackListedToken: refreshToken,
     }).save();
@@ -591,20 +588,28 @@ export const editUserProfilePicture = async ({
     readableStream.push(profilePicture.buffer);
     readableStream.push(null);
 
-    const uploadStream = bucket.openUploadStream(user.username!);
+    const uploadStream = bucket.openUploadStream(user._id.toString());
     const id = uploadStream.id;
 
     readableStream.pipe(uploadStream);
 
-    uploadStream.on('error', () => {
-      return {
-        message: 'Could not upload file to S3',
-        status: 403,
-        name: 'Upload Failed',
-      };
+    const uploadPromise = new Promise((resolve, reject) => {
+      uploadStream.on('error', () => {
+        reject({
+          message: 'Could not upload file to S3',
+          status: 403,
+          name: 'Upload Failed',
+        });
+      });
+
+      uploadStream.on('finish', () => {
+        resolve(() => {});
+      });
     });
 
-    const imgUrl = `http://localhost:5051/file/${id}`;
+    await uploadPromise;
+
+    const imgUrl = `http://192.168.1.113:5051/file/${id}`;
     user.profilePicture = imgUrl;
     const result = await user.save();
 

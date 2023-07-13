@@ -49,6 +49,7 @@ export const isAuth: RequestHandler = async (req, res, next) => {
     req.userId = decodedToken.userId as any;
     next();
   } catch (error) {
+    
     next(error);
   }
 };

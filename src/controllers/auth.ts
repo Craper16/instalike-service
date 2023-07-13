@@ -23,6 +23,7 @@ import {
   signupUserValidations,
   verifyUserValidations,
 } from '../validations/auth';
+import dayjs from 'dayjs';
 
 export const SignupUser: RequestHandler = async (req, res, next) => {
   const body = req.body as UserModel;
@@ -60,14 +61,6 @@ export const SignupUser: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(signupUser.status).json({
-      user: {
-        email: signupUser.user?.email,
-        username: signupUser.user?.username,
-        phoneNumber: signupUser.user?.phoneNumber,
-        countryCode: signupUser.user?.countryCode,
-        profilePicture: signupUser.user?.profilePicture,
-        fullName: signupUser.user?.fullName,
-      },
       message: 'Please check your email for the verification code',
     });
   } catch (error) {
@@ -189,14 +182,6 @@ export const VerifyUser: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(200).json({
-      user: {
-        email: verifyUser.user?.email,
-        username: verifyUser.user?.username,
-        phoneNumber: verifyUser.user?.phoneNumber,
-        countryCode: verifyUser.user?.countryCode,
-        profilePicture: verifyUser.user?.profilePicture,
-        fullName: verifyUser.user?.fullName,
-      },
       message: 'Successfully verified',
     });
   } catch (error) {
@@ -209,6 +194,7 @@ export const ResendVerificationCode: RequestHandler = async (
   res,
   next
 ) => {
+  console.log('Hitting');
   const { email } = req.body as { email: string };
 
   const { error } = resendVerificationValidation.validate(req.body);
@@ -244,14 +230,6 @@ export const ResendVerificationCode: RequestHandler = async (
     }
 
     return res.status(resendVerification.status).json({
-      user: {
-        email: resendVerification.user?.email,
-        username: resendVerification.user?.username,
-        phoneNumber: resendVerification.user?.phoneNumber,
-        countryCode: resendVerification.user?.countryCode,
-        profilePicture: resendVerification.user?.profilePicture,
-        fullName: resendVerification.user?.fullName,
-      },
       message: 'Verification code sent successfully',
     });
   } catch (error) {
@@ -311,6 +289,7 @@ export const ResetPassword: RequestHandler = async (req, res, next) => {
         profilePicture: resetPasswordResponse.user?.profilePicture,
         fullName: resetPasswordResponse.user?.fullName,
       },
+      message: 'Password reset successfully',
     });
   } catch (error) {
     next(error);
@@ -466,8 +445,6 @@ export const RefreshUserTokens: RequestHandler = async (req, res, next) => {
 
 export const EditProfilePicture: RequestHandler = async (req, res, next) => {
   const profilePicture = req.file;
-
-  console.log(req.userId);
 
   try {
     const editProfilePictureResponse = await editUserProfilePicture({
