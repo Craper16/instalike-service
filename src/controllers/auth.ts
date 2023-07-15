@@ -6,6 +6,7 @@ import {
   editUserProfilePicture,
   getLoggedInUserData,
   refreshUserTokens,
+  removeUserProfilePicture,
   resendVerificationCode,
   resetPassword,
   signUp,
@@ -108,6 +109,7 @@ export const SigninUser: RequestHandler = async (req, res, next) => {
 
     return res.status(signinUserResponse.status).json({
       user: {
+        userId: signinUserResponse.user?._id,
         email: signinUserResponse.user?.email,
         username: signinUserResponse.user?.username,
         phoneNumber: signinUserResponse.user?.phoneNumber,
@@ -167,6 +169,7 @@ export const VerifyUser: RequestHandler = async (req, res, next) => {
     if (verifyUser.access_token && verifyUser.refresh_token) {
       return res.status(200).json({
         user: {
+          userId: verifyUser.user?._id,
           email: verifyUser.user?.email,
           username: verifyUser.user?.username,
           phoneNumber: verifyUser.user?.phoneNumber,
@@ -282,6 +285,7 @@ export const ResetPassword: RequestHandler = async (req, res, next) => {
 
     return res.status(resetPasswordResponse.status).json({
       user: {
+        userId: resetPasswordResponse.user?._id,
         email: resetPasswordResponse.user?.email,
         username: resetPasswordResponse.user?.username,
         phoneNumber: resetPasswordResponse.user?.phoneNumber,
@@ -317,6 +321,7 @@ export const GetLoggedInUserData: RequestHandler = async (req, res, next) => {
 
     return res.status(getLoggedInUserDataResponse.status).json({
       user: {
+        userId: getLoggedInUserDataResponse.user?._id,
         email: getLoggedInUserDataResponse.user?.email,
         username: getLoggedInUserDataResponse.user?.username,
         phoneNumber: getLoggedInUserDataResponse.user?.phoneNumber,
@@ -377,6 +382,7 @@ export const ChangeUserPassword: RequestHandler = async (req, res, next) => {
 
     return res.status(changeUserPasswordResponse.status).json({
       user: {
+        userId: changeUserPasswordResponse.user?._id,
         email: changeUserPasswordResponse.user?.email,
         username: changeUserPasswordResponse.user?.username,
         phoneNumber: changeUserPasswordResponse.user?.phoneNumber,
@@ -427,6 +433,7 @@ export const RefreshUserTokens: RequestHandler = async (req, res, next) => {
 
     return res.status(refreshUserTokensResponse.status).json({
       user: {
+        userId: refreshUserTokensResponse.user?._id,
         email: refreshUserTokensResponse.user?.email,
         username: refreshUserTokensResponse.user?.username,
         phoneNumber: refreshUserTokensResponse.user?.phoneNumber,
@@ -467,12 +474,48 @@ export const EditProfilePicture: RequestHandler = async (req, res, next) => {
 
     return res.status(editProfilePictureResponse.status).json({
       user: {
+        userId: editProfilePictureResponse.user?._id,
         email: editProfilePictureResponse.user?.email,
         username: editProfilePictureResponse.user?.username,
         phoneNumber: editProfilePictureResponse.user?.phoneNumber,
         countryCode: editProfilePictureResponse.user?.countryCode,
         profilePicture: editProfilePictureResponse.user?.profilePicture,
         fullName: editProfilePictureResponse.user?.fullName,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const RemoveProfilePicture: RequestHandler = async (req, res, next) => {
+  try {
+    const removeProfilePictureResponse = await removeUserProfilePicture({
+      userId: req.userId,
+    });
+
+    if (removeProfilePictureResponse?.status !== 200) {
+      const error: ErrorResponse = {
+        message: removeProfilePictureResponse?.name!,
+        name: removeProfilePictureResponse?.name!,
+        status: removeProfilePictureResponse?.status!,
+        data: {
+          message: removeProfilePictureResponse?.message!,
+          statusCode: removeProfilePictureResponse?.status!,
+        },
+      };
+      throw error;
+    }
+
+    return res.status(removeProfilePictureResponse.status).json({
+      user: {
+        userId: removeProfilePictureResponse.user?._id,
+        email: removeProfilePictureResponse.user?.email,
+        username: removeProfilePictureResponse.user?.username,
+        phoneNumber: removeProfilePictureResponse.user?.phoneNumber,
+        countryCode: removeProfilePictureResponse.user?.countryCode,
+        profilePicture: removeProfilePictureResponse.user?.profilePicture,
+        fullName: removeProfilePictureResponse.user?.fullName,
       },
     });
   } catch (error) {
@@ -527,6 +570,7 @@ export const EditUserProfile: RequestHandler = async (req, res, next) => {
 
     return res.status(editUserProfileResponse.status).json({
       user: {
+        userId: editUserProfileResponse.user?._id,
         email: editUserProfileResponse.user?.email,
         username: editUserProfileResponse.user?.username,
         phoneNumber: editUserProfileResponse.user?.phoneNumber,

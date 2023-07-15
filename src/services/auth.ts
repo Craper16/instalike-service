@@ -619,6 +619,32 @@ export const editUserProfilePicture = async ({
   }
 };
 
+export const removeUserProfilePicture = async ({
+  userId,
+}: {
+  userId: string;
+}) => {
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return {
+        message: 'User doesnt exist',
+        name: 'Not Found',
+        status: 404,
+      };
+    }
+
+    user.profilePicture = null as any;
+
+    const response = await user.save();
+
+    return { user: response, status: 200 };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const editUserProfile = async ({
   countryCode,
   fullName,
@@ -644,7 +670,10 @@ export const editUserProfile = async ({
       };
     }
 
-    if (userWithSameUsername && userWithSameUsername?._id !== user._id) {
+    if (
+      userWithSameUsername &&
+      userWithSameUsername?._id.toString() !== user._id.toString()
+    ) {
       return {
         message: 'A user with this username already exists',
         name: 'Already Exists',

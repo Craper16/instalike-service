@@ -14,6 +14,7 @@ import { connectToDb } from './helpers/db';
 import multer, { memoryStorage } from 'multer';
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth';
+import searchRoutes from './routes/search';
 import { createTransport } from 'nodemailer';
 import * as jose from 'jose';
 import { GridFsStorage } from 'multer-gridfs-storage';
@@ -64,6 +65,7 @@ app.get('/file/:id', (req, res, next) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/search', searchRoutes);
 
 app.use('*', (req: Request, res: Response) => {
   return res.status(404).json({ message: 'Endpoint does not exist' });

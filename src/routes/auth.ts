@@ -5,6 +5,7 @@ import {
   EditUserProfile,
   GetLoggedInUserData,
   RefreshUserTokens,
+  RemoveProfilePicture,
   ResendVerificationCode,
   ResetPassword,
   SigninUser,
@@ -40,6 +41,8 @@ router.post(
   upload.single('profilePicture'),
   EditProfilePicture
 );
+
+router.delete('/me/remove-profile-picture', isAuth, RemoveProfilePicture);
 
 router.put('/me/edit-profile', isAuth, EditUserProfile);
 
