@@ -7,6 +7,7 @@ export const SearchUsers: RequestHandler = async (req, res, next) => {
   try {
     const searchUsersResponse = await searchUsers({
       searchQuery: search_query,
+      userId: req.userId,
     });
 
     return res

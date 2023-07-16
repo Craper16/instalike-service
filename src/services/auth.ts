@@ -693,3 +693,21 @@ export const editUserProfile = async ({
     console.error(error);
   }
 };
+
+export const getUserData = async ({ userId }: { userId: string }) => {
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return {
+        message: 'User doesnt exist',
+        name: 'Not Found',
+        status: 404,
+      };
+    }
+
+    return { user, status: 200 };
+  } catch (error) {
+    console.error(error);
+  }
+};
