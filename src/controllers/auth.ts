@@ -117,6 +117,8 @@ export const SigninUser: RequestHandler = async (req, res, next) => {
         profilePicture: signinUserResponse.user?.profilePicture,
         fullName: signinUserResponse.user?.fullName,
       },
+      followers: signinUserResponse?.followers,
+      following: signinUserResponse?.following,
       access_token: signinUserResponse.access_token,
       refresh_token: signinUserResponse.refresh_token,
       expires_at: signinUserResponse.expires_at,
@@ -177,6 +179,8 @@ export const VerifyUser: RequestHandler = async (req, res, next) => {
           profilePicture: verifyUser.user?.profilePicture,
           fullName: verifyUser.user?.fullName,
         },
+        followers: verifyUser?.followers,
+        following: verifyUser?.following,
         access_token: verifyUser.access_token,
         refresh_token: verifyUser.refresh_token,
         expires_at: verifyUser.expires_at,
@@ -293,6 +297,8 @@ export const ResetPassword: RequestHandler = async (req, res, next) => {
         profilePicture: resetPasswordResponse.user?.profilePicture,
         fullName: resetPasswordResponse.user?.fullName,
       },
+      followers: resetPasswordResponse?.followers,
+      following: resetPasswordResponse?.following,
       message: 'Password reset successfully',
     });
   } catch (error) {
@@ -329,6 +335,8 @@ export const GetLoggedInUserData: RequestHandler = async (req, res, next) => {
         profilePicture: getLoggedInUserDataResponse.user?.profilePicture,
         fullName: getLoggedInUserDataResponse.user?.fullName,
       },
+      followers: getLoggedInUserDataResponse?.followers,
+      following: getLoggedInUserDataResponse?.following,
     });
   } catch (error) {
     next(error);
@@ -390,6 +398,8 @@ export const ChangeUserPassword: RequestHandler = async (req, res, next) => {
         profilePicture: changeUserPasswordResponse.user?.profilePicture,
         fullName: changeUserPasswordResponse.user?.fullName,
       },
+      followers: changeUserPasswordResponse?.followers,
+      following: changeUserPasswordResponse?.following,
     });
   } catch (error) {
     next(error);
@@ -441,6 +451,8 @@ export const RefreshUserTokens: RequestHandler = async (req, res, next) => {
         profilePicture: refreshUserTokensResponse.user?.profilePicture,
         fullName: refreshUserTokensResponse.user?.fullName,
       },
+      followers: refreshUserTokensResponse?.followers,
+      following: refreshUserTokensResponse?.following,
       access_token: refreshUserTokensResponse.access_token,
       refresh_token: refreshUserTokensResponse.refresh_token,
       expires_at: refreshUserTokensResponse.expires_at,
@@ -482,6 +494,8 @@ export const EditProfilePicture: RequestHandler = async (req, res, next) => {
         profilePicture: editProfilePictureResponse.user?.profilePicture,
         fullName: editProfilePictureResponse.user?.fullName,
       },
+      followers: editProfilePictureResponse?.followers,
+      following: editProfilePictureResponse?.following,
     });
   } catch (error) {
     next(error);
@@ -517,6 +531,8 @@ export const RemoveProfilePicture: RequestHandler = async (req, res, next) => {
         profilePicture: removeProfilePictureResponse.user?.profilePicture,
         fullName: removeProfilePictureResponse.user?.fullName,
       },
+      followers: removeProfilePictureResponse?.followers,
+      following: removeProfilePictureResponse?.following,
     });
   } catch (error) {
     next(error);
@@ -578,6 +594,8 @@ export const EditUserProfile: RequestHandler = async (req, res, next) => {
         profilePicture: editUserProfileResponse.user?.profilePicture,
         fullName: editUserProfileResponse.user?.fullName,
       },
+      followers: editUserProfileResponse?.followers,
+      following: editUserProfileResponse?.following,
       message: 'Changes saved successfully',
     });
   } catch (error) {
@@ -613,6 +631,8 @@ export const GetUserData: RequestHandler = async (req, res, next) => {
         profilePicture: getUserDataResponse.user?.profilePicture,
         fullName: getUserDataResponse.user?.fullName,
       },
+      followers: getUserDataResponse?.followers,
+      following: getUserDataResponse?.following,
     });
   } catch (error) {
     next(error);

@@ -76,6 +76,8 @@ export const signUp = async ({
       username: username.toLowerCase(),
       profilePicture: null,
       verified: false,
+      followers: [],
+      following: [],
     });
 
     const verificationCode = new VerificationCode({
@@ -170,10 +172,39 @@ export const signin = async ({
       'YYYY-MM-DD HH:mm:ss'
     );
 
+    const followers = await User.find({ _id: { $in: user.followers } });
+    const following = await User.find({ _id: { $in: user.following } });
+
+    const followersReturned = followers.map((follower) => {
+      return {
+        userId: follower._id,
+        email: follower.email,
+        username: follower.username,
+        phoneNumber: follower.phoneNumber,
+        countryCode: follower.countryCode,
+        profilePicture: follower.profilePicture,
+        fullName: follower.fullName,
+      };
+    });
+
+    const followingReturned = following.map((following) => {
+      return {
+        userId: following._id,
+        email: following.email,
+        username: following.username,
+        phoneNumber: following.phoneNumber,
+        countryCode: following.countryCode,
+        profilePicture: following.profilePicture,
+        fullName: following.fullName,
+      };
+    });
+
     return {
       user,
       access_token,
       refresh_token,
+      followers: followersReturned,
+      following: followingReturned,
       expires_at: tokenExpirationDate,
       status: 200,
     };
@@ -270,9 +301,39 @@ export const verify = async ({
     const tokenExpirationDate = dayjs(payload.exp! * 1000).format(
       'YYYY-MM-DD HH:mm:ss'
     );
+
+    const followers = await User.find({ _id: { $in: result.followers } });
+    const following = await User.find({ _id: { $in: result.following } });
+
+    const followersReturned = followers.map((follower) => {
+      return {
+        userId: follower._id,
+        email: follower.email,
+        username: follower.username,
+        phoneNumber: follower.phoneNumber,
+        countryCode: follower.countryCode,
+        profilePicture: follower.profilePicture,
+        fullName: follower.fullName,
+      };
+    });
+
+    const followingReturned = following.map((following) => {
+      return {
+        userId: following._id,
+        email: following.email,
+        username: following.username,
+        phoneNumber: following.phoneNumber,
+        countryCode: following.countryCode,
+        profilePicture: following.profilePicture,
+        fullName: following.fullName,
+      };
+    });
+
     if (login === 'true') {
       return {
         user: result,
+        followers: followersReturned,
+        following: followingReturned,
         access_token,
         refresh_token,
         expires_at: tokenExpirationDate,
@@ -282,6 +343,8 @@ export const verify = async ({
 
     return {
       user: result,
+      followers: followersReturned,
+      following: followingReturned,
       status: 200,
     };
   } catch (error) {
@@ -399,7 +462,39 @@ export const resetPassword = async ({
 
     const result = await user.save();
 
-    return { status: 200, user: result };
+    const followers = await User.find({ _id: { $in: user.followers } });
+    const following = await User.find({ _id: { $in: user.following } });
+
+    const followersReturned = followers.map((follower) => {
+      return {
+        userId: follower._id,
+        email: follower.email,
+        username: follower.username,
+        phoneNumber: follower.phoneNumber,
+        countryCode: follower.countryCode,
+        profilePicture: follower.profilePicture,
+        fullName: follower.fullName,
+      };
+    });
+
+    const followingReturned = following.map((following) => {
+      return {
+        userId: following._id,
+        email: following.email,
+        username: following.username,
+        phoneNumber: following.phoneNumber,
+        countryCode: following.countryCode,
+        profilePicture: following.profilePicture,
+        fullName: following.fullName,
+      };
+    });
+
+    return {
+      status: 200,
+      user: result,
+      followers: followersReturned,
+      following: followingReturned,
+    };
   } catch (error) {
     console.log(error);
   }
@@ -417,7 +512,39 @@ export const getLoggedInUserData = async ({ userId }: { userId: string }) => {
       };
     }
 
-    return { user, status: 200 };
+    const followers = await User.find({ _id: { $in: user.followers } });
+    const following = await User.find({ _id: { $in: user.following } });
+
+    const followersReturned = followers.map((follower) => {
+      return {
+        userId: follower._id,
+        email: follower.email,
+        username: follower.username,
+        phoneNumber: follower.phoneNumber,
+        countryCode: follower.countryCode,
+        profilePicture: follower.profilePicture,
+        fullName: follower.fullName,
+      };
+    });
+
+    const followingReturned = following.map((following) => {
+      return {
+        userId: following._id,
+        email: following.email,
+        username: following.username,
+        phoneNumber: following.phoneNumber,
+        countryCode: following.countryCode,
+        profilePicture: following.profilePicture,
+        fullName: following.fullName,
+      };
+    });
+
+    return {
+      user,
+      status: 200,
+      followers: followersReturned,
+      following: followingReturned,
+    };
   } catch (error) {
     console.error(error);
   }
@@ -459,8 +586,37 @@ export const changeUserPassword = async ({
 
     const result = await user.save();
 
+    const followers = await User.find({ _id: { $in: result.followers } });
+    const following = await User.find({ _id: { $in: result.following } });
+
+    const followersReturned = followers.map((follower) => {
+      return {
+        userId: follower._id,
+        email: follower.email,
+        username: follower.username,
+        phoneNumber: follower.phoneNumber,
+        countryCode: follower.countryCode,
+        profilePicture: follower.profilePicture,
+        fullName: follower.fullName,
+      };
+    });
+
+    const followingReturned = following.map((following) => {
+      return {
+        userId: following._id,
+        email: following.email,
+        username: following.username,
+        phoneNumber: following.phoneNumber,
+        countryCode: following.countryCode,
+        profilePicture: following.profilePicture,
+        fullName: following.fullName,
+      };
+    });
+
     return {
       user: result,
+      followers: followersReturned,
+      following: followingReturned,
       message: 'Password changed successfully',
       status: 200,
     };
@@ -546,8 +702,37 @@ export const refreshUserTokens = async ({
       blackListedToken: refreshToken,
     }).save();
 
+    const followers = await User.find({ _id: { $in: user.followers } });
+    const following = await User.find({ _id: { $in: user.following } });
+
+    const followersReturned = followers.map((follower) => {
+      return {
+        userId: follower._id,
+        email: follower.email,
+        username: follower.username,
+        phoneNumber: follower.phoneNumber,
+        countryCode: follower.countryCode,
+        profilePicture: follower.profilePicture,
+        fullName: follower.fullName,
+      };
+    });
+
+    const followingReturned = following.map((following) => {
+      return {
+        userId: following._id,
+        email: following.email,
+        username: following.username,
+        phoneNumber: following.phoneNumber,
+        countryCode: following.countryCode,
+        profilePicture: following.profilePicture,
+        fullName: following.fullName,
+      };
+    });
+
     return {
       user,
+      followers: followersReturned,
+      following: followingReturned,
       access_token,
       refresh_token,
       expires_at: tokenExpirationDate,
@@ -613,7 +798,39 @@ export const editUserProfilePicture = async ({
     user.profilePicture = imgUrl;
     const result = await user.save();
 
-    return { user: result, status: 200 };
+    const followers = await User.find({ _id: { $in: result.followers } });
+    const following = await User.find({ _id: { $in: result.following } });
+
+    const followersReturned = followers.map((follower) => {
+      return {
+        userId: follower._id,
+        email: follower.email,
+        username: follower.username,
+        phoneNumber: follower.phoneNumber,
+        countryCode: follower.countryCode,
+        profilePicture: follower.profilePicture,
+        fullName: follower.fullName,
+      };
+    });
+
+    const followingReturned = following.map((following) => {
+      return {
+        userId: following._id,
+        email: following.email,
+        username: following.username,
+        phoneNumber: following.phoneNumber,
+        countryCode: following.countryCode,
+        profilePicture: following.profilePicture,
+        fullName: following.fullName,
+      };
+    });
+
+    return {
+      user: result,
+      followers: followersReturned,
+      following: followingReturned,
+      status: 200,
+    };
   } catch (error) {
     console.error(error);
   }
@@ -637,9 +854,41 @@ export const removeUserProfilePicture = async ({
 
     user.profilePicture = null as any;
 
-    const response = await user.save();
+    const result = await user.save();
 
-    return { user: response, status: 200 };
+    const followers = await User.find({ _id: { $in: result.followers } });
+    const following = await User.find({ _id: { $in: result.following } });
+
+    const followersReturned = followers.map((follower) => {
+      return {
+        userId: follower._id,
+        email: follower.email,
+        username: follower.username,
+        phoneNumber: follower.phoneNumber,
+        countryCode: follower.countryCode,
+        profilePicture: follower.profilePicture,
+        fullName: follower.fullName,
+      };
+    });
+
+    const followingReturned = following.map((following) => {
+      return {
+        userId: following._id,
+        email: following.email,
+        username: following.username,
+        phoneNumber: following.phoneNumber,
+        countryCode: following.countryCode,
+        profilePicture: following.profilePicture,
+        fullName: following.fullName,
+      };
+    });
+
+    return {
+      user: result,
+      followers: followersReturned,
+      following: followingReturned,
+      status: 200,
+    };
   } catch (error) {
     console.error(error);
   }
@@ -688,7 +937,39 @@ export const editUserProfile = async ({
 
     const result = await user.save();
 
-    return { user: result, status: 200 };
+    const followers = await User.find({ _id: { $in: result.followers } });
+    const following = await User.find({ _id: { $in: result.following } });
+
+    const followersReturned = followers.map((follower) => {
+      return {
+        userId: follower._id,
+        email: follower.email,
+        username: follower.username,
+        phoneNumber: follower.phoneNumber,
+        countryCode: follower.countryCode,
+        profilePicture: follower.profilePicture,
+        fullName: follower.fullName,
+      };
+    });
+
+    const followingReturned = following.map((following) => {
+      return {
+        userId: following._id,
+        email: following.email,
+        username: following.username,
+        phoneNumber: following.phoneNumber,
+        countryCode: following.countryCode,
+        profilePicture: following.profilePicture,
+        fullName: following.fullName,
+      };
+    });
+
+    return {
+      user: result,
+      followers: followersReturned,
+      following: followingReturned,
+      status: 200,
+    };
   } catch (error) {
     console.error(error);
   }
@@ -706,7 +987,39 @@ export const getUserData = async ({ userId }: { userId: string }) => {
       };
     }
 
-    return { user, status: 200 };
+    const followers = await User.find({ _id: { $in: user.followers } });
+    const following = await User.find({ _id: { $in: user.following } });
+
+    const followersReturned = followers.map((follower) => {
+      return {
+        userId: follower._id,
+        email: follower.email,
+        username: follower.username,
+        phoneNumber: follower.phoneNumber,
+        countryCode: follower.countryCode,
+        profilePicture: follower.profilePicture,
+        fullName: follower.fullName,
+      };
+    });
+
+    const followingReturned = following.map((following) => {
+      return {
+        userId: following._id,
+        email: following.email,
+        username: following.username,
+        phoneNumber: following.phoneNumber,
+        countryCode: following.countryCode,
+        profilePicture: following.profilePicture,
+        fullName: following.fullName,
+      };
+    });
+
+    return {
+      user,
+      followers: followersReturned,
+      following: followingReturned,
+      status: 200,
+    };
   } catch (error) {
     console.error(error);
   }

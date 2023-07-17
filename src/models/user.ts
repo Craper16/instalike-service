@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, Types, model } from 'mongoose';
 
 export interface UserModel {
   email: string;
@@ -9,6 +9,8 @@ export interface UserModel {
   countryCode: string;
   profilePicture?: String;
   verified: boolean;
+  followers: string[];
+  following: string[];
 }
 
 const userSchema = new Schema<UserModel>(
@@ -44,6 +46,18 @@ const userSchema = new Schema<UserModel>(
       type: Boolean,
       required: true,
     },
+    followers: [
+      {
+        type: Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    following: [
+      {
+        type: Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   { timestamps: true }
 );
