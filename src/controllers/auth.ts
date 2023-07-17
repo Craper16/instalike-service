@@ -5,7 +5,6 @@ import {
   editUserProfile,
   editUserProfilePicture,
   getLoggedInUserData,
-  getUserData,
   refreshUserTokens,
   removeUserProfilePicture,
   resendVerificationCode,
@@ -597,42 +596,6 @@ export const EditUserProfile: RequestHandler = async (req, res, next) => {
       followers: editUserProfileResponse?.followers,
       following: editUserProfileResponse?.following,
       message: 'Changes saved successfully',
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const GetUserData: RequestHandler = async (req, res, next) => {
-  const { userId } = req.params as { userId: string };
-
-  try {
-    const getUserDataResponse = await getUserData({ userId });
-
-    if (getUserDataResponse?.status !== 200) {
-      const error: ErrorResponse = {
-        message: getUserDataResponse?.name!,
-        name: getUserDataResponse?.name!,
-        status: getUserDataResponse?.status!,
-        data: {
-          message: getUserDataResponse?.message!,
-          statusCode: getUserDataResponse?.status!,
-        },
-      };
-      throw error;
-    }
-    return res.status(getUserDataResponse.status).json({
-      user: {
-        userId: getUserDataResponse.user?._id,
-        email: getUserDataResponse.user?.email,
-        username: getUserDataResponse.user?.username,
-        phoneNumber: getUserDataResponse.user?.phoneNumber,
-        countryCode: getUserDataResponse.user?.countryCode,
-        profilePicture: getUserDataResponse.user?.profilePicture,
-        fullName: getUserDataResponse.user?.fullName,
-      },
-      followers: getUserDataResponse?.followers,
-      following: getUserDataResponse?.following,
     });
   } catch (error) {
     next(error);
