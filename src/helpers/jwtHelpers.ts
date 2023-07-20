@@ -1,4 +1,4 @@
-import { secret } from '../app';
+import { secret } from '..';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '../consts/constants';
 import { BlackListedToken } from '../models/blacklistedToken';
 

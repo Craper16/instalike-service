@@ -1,12 +1,12 @@
 import { Readable } from 'stream';
 import { User } from '../models/user';
-import { bucket, secret } from '../app';
+import { bucket, secret } from '..';
 import { compareSync, hashSync } from 'bcryptjs';
 import {
   generateAccessToken,
   generateRefreshToken,
 } from '../helpers/jwtHelpers';
-import { transporter } from '../app';
+import { transporter } from '..';
 import { MailOptions } from 'nodemailer/lib/sendmail-transport';
 import { VerificationCode } from '../models/verificationCode';
 

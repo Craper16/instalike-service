@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { ErrorResponse, secret } from '../app';
+import { ErrorResponse, secret } from '..';
 import * as jose from 'jose';
 
 export const isAuth: RequestHandler = async (req, res, next) => {

@@ -185,3 +185,81 @@ export const getUserData = async ({ userId }: { userId: string }) => {
     console.error(error);
   }
 };
+
+export const getUserFollowers = async ({ userId }: { userId: string }) => {
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return {
+        message: 'User doesnt exist',
+        name: 'Not Found',
+        status: 404,
+      };
+    }
+
+    const followersPromises = user.followers.map(async (follower) => {
+      try {
+        const userFound = await User.findById(follower);
+        return {
+          userId: userFound?._id,
+          email: userFound?.email,
+          username: userFound?.username,
+          phoneNumber: userFound?.phoneNumber,
+          countryCode: userFound?.countryCode,
+          profilePicture: userFound?.profilePicture,
+          fullName: userFound?.fullName,
+          followers: userFound?.followers,
+          following: userFound?.following,
+        };
+      } catch (error) {
+        return null;
+      }
+    });
+
+    const followers = await Promise.all(followersPromises);
+
+    return { followers, status: 200 };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getUserFollowing = async ({ userId }: { userId: string }) => {
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return {
+        message: 'User doesnt exist',
+        name: 'Not Found',
+        status: 404,
+      };
+    }
+
+    const followingPromises = user.following.map(async (follower) => {
+      try {
+        const userFound = await User.findById(follower);
+        return {
+          userId: userFound?._id,
+          email: userFound?.email,
+          username: userFound?.username,
+          phoneNumber: userFound?.phoneNumber,
+          countryCode: userFound?.countryCode,
+          profilePicture: userFound?.profilePicture,
+          fullName: userFound?.fullName,
+          followers: userFound?.followers,
+          following: userFound?.following,
+        };
+      } catch (error) {
+        return null;
+      }
+    });
+
+    const following = await Promise.all(followingPromises);
+
+    return { following, status: 200 };
+  } catch (error) {
+    console.error(error);
+  }
+};

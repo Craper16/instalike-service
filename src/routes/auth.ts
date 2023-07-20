@@ -4,6 +4,8 @@ import {
   EditProfilePicture,
   EditUserProfile,
   GetLoggedInUserData,
+  GetLoggedInUserFollowers,
+  GetLoggedInUserFollowing,
   RefreshUserTokens,
   RemoveProfilePicture,
   ResendVerificationCode,
@@ -45,5 +47,9 @@ router.post(
 router.delete('/me/remove-profile-picture', isAuth, RemoveProfilePicture);
 
 router.put('/me/edit-profile', isAuth, EditUserProfile);
+
+router.get('/me/followers', isAuth, GetLoggedInUserFollowers);
+
+router.get('/me/following', isAuth, GetLoggedInUserFollowing);
 
 export default router;

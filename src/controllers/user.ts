@@ -1,6 +1,12 @@
 import { RequestHandler } from 'express';
-import { followUser, getUserData, unFollowUser } from '../services/user';
-import { ErrorResponse } from '../app';
+import {
+  followUser,
+  getUserData,
+  getUserFollowers,
+  getUserFollowing,
+  unFollowUser,
+} from '../services/user';
+import { ErrorResponse } from '..';
 
 export const FollowUser: RequestHandler = async (req, res, next) => {
   const { userId } = req.params as { userId: string };
@@ -113,6 +119,62 @@ export const GetUserData: RequestHandler = async (req, res, next) => {
         following: getUserDataResponse.user?.following,
       },
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetUserFollowers: RequestHandler = async (req, res, next) => {
+  const { userId } = req.params as { userId: string };
+
+  try {
+    const getUserFollowersResponse = await getUserFollowers({
+      userId,
+    });
+    if (getUserFollowersResponse?.status !== 200) {
+      const error: ErrorResponse = {
+        message: getUserFollowersResponse?.name!,
+        name: getUserFollowersResponse?.name!,
+        status: getUserFollowersResponse?.status!,
+        data: {
+          message: getUserFollowersResponse?.message!,
+          statusCode: getUserFollowersResponse?.status!,
+        },
+      };
+      throw error;
+    }
+
+    return res
+      .status(getUserFollowersResponse.status)
+      .json({ followers: getUserFollowersResponse.followers });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetUserFollowing: RequestHandler = async (req, res, next) => {
+  const { userId } = req.params as { userId: string };
+
+  try {
+    const getUserFollowingResponse = await getUserFollowing({
+      userId,
+    });
+    if (getUserFollowingResponse?.status !== 200) {
+      const error: ErrorResponse = {
+        message: getUserFollowingResponse?.name!,
+        name: getUserFollowingResponse?.name!,
+        status: getUserFollowingResponse?.status!,
+        data: {
+          message: getUserFollowingResponse?.message!,
+          statusCode: getUserFollowingResponse?.status!,
+        },
+      };
+      throw error;
+    }
+
+    return res
+      .status(getUserFollowingResponse.status)
+      .json({ following: getUserFollowingResponse.following });
   } catch (error) {
     next(error);
   }

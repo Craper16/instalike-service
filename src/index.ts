@@ -25,7 +25,7 @@ export interface ErrorResponse extends Error {
   data?: { message: string; statusCode: number; reason?: string; data?: any[] };
 }
 
-export const secret = jose.base64url.decode(process.env.SECRET);
+export const secret = jose.base64url.decode(process.env.SECRET!);
 
 connectToDb()
   .then(() => console.log('Connected'))
@@ -42,7 +42,7 @@ mongoose.connection.on('connected', () => {
 });
 
 const storage = new GridFsStorage({
-  url: process.env.DB_URI,
+  url: process.env.DB_URI!,
 });
 
 export const upload = multer({ storage });
@@ -76,8 +76,8 @@ app.use('*', (req: Request, res: Response) => {
 export const transporter = createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.NODE_MAILER_GMAIL,
-    pass: process.env.NODE_MAILER_PASSWORD,
+    user: process.env.NODE_MAILER_GMAIL!,
+    pass: process.env.NODE_MAILER_PASSWORD!,
   },
 });
 

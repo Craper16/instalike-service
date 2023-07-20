@@ -10,7 +10,7 @@
     "strict": true /* Enable all strict type-checking options. */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "sourceMap": true,
-    "typeRoots": ["./node_modules/@types", "src/request.d.ts", "src/env.d.ts"]
+    "typeRoots": ["./node_modules/@types", "src/types/request.d.ts", "src/types/env.d.ts"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "src/types/request.d.ts", "src/types/env.d.ts"]
 }

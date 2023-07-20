@@ -13,7 +13,7 @@ import {
   signin,
   verify,
 } from '../services/auth';
-import { ErrorResponse } from '../app';
+import { ErrorResponse } from '..';
 import {
   changePasswordValidation,
   editUserProfileValidations,
@@ -24,6 +24,7 @@ import {
   signupUserValidations,
   verifyUserValidations,
 } from '../validations/auth';
+import { getUserFollowers, getUserFollowing } from '../services/user';
 
 export const SignupUser: RequestHandler = async (req, res, next) => {
   const body = req.body as UserModel;
@@ -308,7 +309,7 @@ export const ResetPassword: RequestHandler = async (req, res, next) => {
 export const GetLoggedInUserData: RequestHandler = async (req, res, next) => {
   try {
     const getLoggedInUserDataResponse = await getLoggedInUserData({
-      userId: req.userId,
+      userId: req.userId!,
     });
 
     if (getLoggedInUserDataResponse?.status !== 200) {
@@ -371,7 +372,7 @@ export const ChangeUserPassword: RequestHandler = async (req, res, next) => {
     const changeUserPasswordResponse = await changeUserPassword({
       newPassword,
       oldPassword,
-      userId: req.userId,
+      userId: req.userId!,
     });
 
     if (changeUserPasswordResponse?.status !== 200) {
@@ -566,7 +567,7 @@ export const EditUserProfile: RequestHandler = async (req, res, next) => {
       countryCode,
       fullName,
       phoneNumber,
-      userId: req.userId,
+      userId: req.userId!,
       username,
     });
 
@@ -597,6 +598,66 @@ export const EditUserProfile: RequestHandler = async (req, res, next) => {
       },
       message: 'Changes saved successfully',
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetLoggedInUserFollowers: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const getLoggedInUserFollowers = await getUserFollowers({
+      userId: req.userId,
+    });
+    if (getLoggedInUserFollowers?.status !== 200) {
+      const error: ErrorResponse = {
+        message: getLoggedInUserFollowers?.name!,
+        name: getLoggedInUserFollowers?.name!,
+        status: getLoggedInUserFollowers?.status!,
+        data: {
+          message: getLoggedInUserFollowers?.message!,
+          statusCode: getLoggedInUserFollowers?.status!,
+        },
+      };
+      throw error;
+    }
+
+    return res
+      .status(getLoggedInUserFollowers.status)
+      .json({ followers: getLoggedInUserFollowers.followers });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetLoggedInUserFollowing: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const getLoggedInUserFollowing = await getUserFollowing({
+      userId: req.userId,
+    });
+    if (getLoggedInUserFollowing?.status !== 200) {
+      const error: ErrorResponse = {
+        message: getLoggedInUserFollowing?.name!,
+        name: getLoggedInUserFollowing?.name!,
+        status: getLoggedInUserFollowing?.status!,
+        data: {
+          message: getLoggedInUserFollowing?.message!,
+          statusCode: getLoggedInUserFollowing?.status!,
+        },
+      };
+      throw error;
+    }
+
+    return res
+      .status(getLoggedInUserFollowing.status)
+      .json({ following: getLoggedInUserFollowing.following });
   } catch (error) {
     next(error);
   }
