@@ -33,9 +33,9 @@ export const FollowUser: RequestHandler = async (req, res, next) => {
         countryCode: followUserResponse.user?.countryCode,
         profilePicture: followUserResponse.user?.profilePicture,
         fullName: followUserResponse.user?.fullName,
+        followers: followUserResponse.user?.followers,
+        following: followUserResponse.user?.following,
       },
-      followers: followUserResponse.followers,
-      following: followUserResponse.following,
     });
   } catch (error) {
     next(error);
@@ -73,9 +73,9 @@ export const UnFollowUser: RequestHandler = async (req, res, next) => {
         countryCode: unFollowUserResponse.user?.countryCode,
         profilePicture: unFollowUserResponse.user?.profilePicture,
         fullName: unFollowUserResponse.user?.fullName,
+        followers: unFollowUserResponse.user?.followers,
+        following: unFollowUserResponse.user?.following,
       },
-      followers: unFollowUserResponse.followers,
-      following: unFollowUserResponse.following,
     });
   } catch (error) {
     next(error);
@@ -109,9 +109,9 @@ export const GetUserData: RequestHandler = async (req, res, next) => {
         countryCode: getUserDataResponse.user?.countryCode,
         profilePicture: getUserDataResponse.user?.profilePicture,
         fullName: getUserDataResponse.user?.fullName,
+        followers: getUserDataResponse.user?.followers,
+        following: getUserDataResponse.user?.following,
       },
-      followers: getUserDataResponse?.followers,
-      following: getUserDataResponse?.following,
     });
   } catch (error) {
     next(error);
