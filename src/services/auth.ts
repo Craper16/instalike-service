@@ -446,7 +446,7 @@ export const changeUserPassword = async ({
 
     if (!user) {
       return {
-        message: 'User doesnt exist',
+        message: "User doesn't exist",
         name: 'Not Found',
         status: 404,
       };
@@ -522,7 +522,7 @@ export const refreshUserTokens = async ({
 
     if (!user) {
       return {
-        message: 'User doesnt exist',
+        message: "User doesn't exist",
         name: 'Not Found',
         status: 404,
       };
@@ -579,7 +579,7 @@ export const editUserProfilePicture = async ({
 
     if (!user) {
       return {
-        message: 'User doesnt exist',
+        message: "User doesn't exist",
         name: 'Not Found',
         status: 404,
       };
@@ -641,7 +641,7 @@ export const removeUserProfilePicture = async ({
 
     if (!user) {
       return {
-        message: 'User doesnt exist',
+        message: "User doesn't exist",
         name: 'Not Found',
         status: 404,
       };

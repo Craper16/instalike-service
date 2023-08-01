@@ -13,7 +13,7 @@ export const followUser = async ({
 
     if (!user) {
       return {
-        message: 'User doesnt exist',
+        message: "User doesn't exist",
         name: 'Not Found',
         status: 404,
       };
@@ -21,7 +21,7 @@ export const followUser = async ({
 
     if (!userToFollow) {
       return {
-        message: 'User doesnt exist',
+        message: "User doesn't exist",
         name: 'Not Found',
         status: 404,
       };
@@ -105,7 +105,7 @@ export const unFollowUser = async ({
 
     if (!user) {
       return {
-        message: 'User doesnt exist',
+        message: "User doesn't exist",
         name: 'Not Found',
         status: 404,
       };
@@ -113,7 +113,7 @@ export const unFollowUser = async ({
 
     if (!userToUnFollow) {
       return {
-        message: 'User doesnt exist',
+        message: "User doesn't exist",
         name: 'Not Found',
         status: 404,
       };
@@ -171,7 +171,7 @@ export const getUserData = async ({ userId }: { userId: string }) => {
 
     if (!user) {
       return {
-        message: 'User doesnt exist',
+        message: "User doesn't exist",
         name: 'Not Found',
         status: 404,
       };
@@ -192,7 +192,7 @@ export const getUserFollowers = async ({ userId }: { userId: string }) => {
 
     if (!user) {
       return {
-        message: 'User doesnt exist',
+        message: "User doesn't exist",
         name: 'Not Found',
         status: 404,
       };
@@ -231,7 +231,7 @@ export const getUserFollowing = async ({ userId }: { userId: string }) => {
 
     if (!user) {
       return {
-        message: 'User doesnt exist',
+        message: "User doesn't exist",
         name: 'Not Found',
         status: 404,
       };

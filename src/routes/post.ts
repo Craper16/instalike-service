@@ -1,14 +1,20 @@
 import { Router } from 'express';
 import { isAuth } from '../middlewares/isAuth';
+import multer, { memoryStorage } from 'multer';
+import { DeletePost, EditPost, GetPost, Post } from '../controllers/post';
 
 const router = Router();
 
+export const upload = multer({ storage: memoryStorage() });
+
 router.get('/', isAuth);
 
-router.post('/', isAuth);
+router.get('/:postId', isAuth, GetPost);
 
-router.put('/:postId', isAuth);
+router.post('/', isAuth, upload.array('posts'), Post);
 
-router.delete('/:postId', isAuth);
+router.put('/:postId', isAuth, upload.array('posts'), EditPost);
+
+router.delete('/:postId', isAuth, DeletePost);
 
 export default router;
