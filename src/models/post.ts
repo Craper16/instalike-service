@@ -1,4 +1,5 @@
-import { Schema, Types, model } from 'mongoose';
+import { Schema, Types, model, PaginateModel } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
 
 interface PostModel {
   userId: any;
@@ -17,10 +18,15 @@ const postSchema = new Schema<PostModel>(
     caption: { type: String },
     userId: {
       type: Types.ObjectId,
-      ref: 'user',
+      ref: 'User',
     },
   },
   { timestamps: true }
 );
 
-export const Post = model<PostModel>('Post', postSchema);
+postSchema.plugin(paginate);
+
+export const Post = model<PostModel, PaginateModel<PostModel>>(
+  'Post',
+  postSchema
+);

@@ -18,7 +18,7 @@ const verificationCodeSchema = new Schema<VerificationCodeModel>(
     },
     userId: {
       type: Types.ObjectId,
-      ref: 'user',
+      ref: 'User',
     },
   },
   { timestamps: true }

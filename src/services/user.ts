@@ -1,4 +1,8 @@
+import dayjs from 'dayjs';
+import { PER_PAGE } from '../consts/constants';
+import { Post } from '../models/post';
 import { User } from '../models/user';
+import { returnUser } from '../helpers/user';
 
 export const followUser = async ({
   userId,
@@ -259,6 +263,51 @@ export const getUserFollowing = async ({ userId }: { userId: string }) => {
     const following = await Promise.all(followingPromises);
 
     return { following, status: 200 };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getUserPosts = async ({
+  userId,
+  page,
+}: {
+  userId: string;
+  page: number;
+}) => {
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return {
+        message: "User doesn't exist",
+        name: 'Not Found',
+        status: 404,
+      };
+    }
+
+    const posts = await Post.paginate(
+      { userId: user._id },
+      { limit: PER_PAGE, page, sort: { updatedAt: -1 } }
+    );
+
+    const postsReponse = posts.docs.map(async (post) => {
+      const user = await User.findById(post.userId);
+
+      return {
+        postId: post?._id,
+        post: {
+          post: post?.post,
+          caption: post?.caption,
+        },
+        user: returnUser({ user }),
+        postDate: dayjs((post as any)?.createdAt).fromNow(false),
+      };
+    });
+
+    const docs = await Promise.all(postsReponse);
+
+    return { status: 200, posts: { ...posts, docs } };
   } catch (error) {
     console.error(error);
   }

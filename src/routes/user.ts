@@ -5,6 +5,7 @@ import {
   GetUserData,
   GetUserFollowers,
   GetUserFollowing,
+  GetUserPosts,
   UnFollowUser,
 } from '../controllers/user';
 
@@ -19,5 +20,7 @@ router.get('/:userId', isAuth, GetUserData);
 router.get('/followers/:userId', isAuth, GetUserFollowers);
 
 router.get('/following/:userId', isAuth, GetUserFollowing);
+
+router.get('/posts/:userId', isAuth, GetUserPosts);
 
 export default router;

@@ -4,9 +4,11 @@ import {
   getUserData,
   getUserFollowers,
   getUserFollowing,
+  getUserPosts,
   unFollowUser,
 } from '../services/user';
 import { ErrorResponse } from '..';
+import { returnUser } from '../helpers/user';
 
 export const FollowUser: RequestHandler = async (req, res, next) => {
   const { userId } = req.params as { userId: string };
@@ -31,17 +33,7 @@ export const FollowUser: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(followUserResponse.status).json({
-      user: {
-        userId: followUserResponse.user?._id,
-        email: followUserResponse.user?.email,
-        username: followUserResponse.user?.username,
-        phoneNumber: followUserResponse.user?.phoneNumber,
-        countryCode: followUserResponse.user?.countryCode,
-        profilePicture: followUserResponse.user?.profilePicture,
-        fullName: followUserResponse.user?.fullName,
-        followers: followUserResponse.user?.followers,
-        following: followUserResponse.user?.following,
-      },
+      user: returnUser({ user: followUserResponse.user }),
     });
   } catch (error) {
     next(error);
@@ -71,17 +63,7 @@ export const UnFollowUser: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(unFollowUserResponse.status).json({
-      user: {
-        userId: unFollowUserResponse.user?._id,
-        email: unFollowUserResponse.user?.email,
-        username: unFollowUserResponse.user?.username,
-        phoneNumber: unFollowUserResponse.user?.phoneNumber,
-        countryCode: unFollowUserResponse.user?.countryCode,
-        profilePicture: unFollowUserResponse.user?.profilePicture,
-        fullName: unFollowUserResponse.user?.fullName,
-        followers: unFollowUserResponse.user?.followers,
-        following: unFollowUserResponse.user?.following,
-      },
+      user: returnUser({ user: unFollowUserResponse.user }),
     });
   } catch (error) {
     next(error);
@@ -107,17 +89,7 @@ export const GetUserData: RequestHandler = async (req, res, next) => {
       throw error;
     }
     return res.status(getUserDataResponse.status).json({
-      user: {
-        userId: getUserDataResponse.user?._id,
-        email: getUserDataResponse.user?.email,
-        username: getUserDataResponse.user?.username,
-        phoneNumber: getUserDataResponse.user?.phoneNumber,
-        countryCode: getUserDataResponse.user?.countryCode,
-        profilePicture: getUserDataResponse.user?.profilePicture,
-        fullName: getUserDataResponse.user?.fullName,
-        followers: getUserDataResponse.user?.followers,
-        following: getUserDataResponse.user?.following,
-      },
+      user: returnUser({ user: getUserDataResponse.user }),
     });
   } catch (error) {
     next(error);
@@ -175,6 +147,37 @@ export const GetUserFollowing: RequestHandler = async (req, res, next) => {
     return res
       .status(getUserFollowingResponse.status)
       .json({ following: getUserFollowingResponse.following });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetUserPosts: RequestHandler = async (req, res, next) => {
+  const { page } = req.query as { page: string };
+  const { userId } = req.params as { userId: string };
+
+  try {
+    const getUserPostsResponse = await getUserPosts({
+      page: +page || 1,
+      userId,
+    });
+
+    if (getUserPostsResponse?.status !== 200) {
+      const error: ErrorResponse = {
+        message: getUserPostsResponse?.name!,
+        name: getUserPostsResponse?.name!,
+        status: getUserPostsResponse?.status!,
+        data: {
+          message: getUserPostsResponse?.message!,
+          statusCode: getUserPostsResponse?.status!,
+        },
+      };
+      throw error;
+    }
+
+    return res
+      .status(getUserPostsResponse.status)
+      .json({ posts: getUserPostsResponse.posts });
   } catch (error) {
     next(error);
   }

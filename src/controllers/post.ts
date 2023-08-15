@@ -3,6 +3,7 @@ import { deletePost, editPost, getPost, post } from '../services/post';
 import { ErrorResponse } from '..';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
+import { returnUser } from '../helpers/user';
 dayjs.extend(relativeTime);
 
 export const GetPost: RequestHandler = async (req, res, next) => {
@@ -31,17 +32,7 @@ export const GetPost: RequestHandler = async (req, res, next) => {
           post: getPostResponse?.post?.post,
           caption: getPostResponse?.post?.caption,
         },
-        user: {
-          userId: getPostResponse.user?._id,
-          email: getPostResponse.user?.email,
-          username: getPostResponse.user?.username,
-          phoneNumber: getPostResponse.user?.phoneNumber,
-          countryCode: getPostResponse.user?.countryCode,
-          profilePicture: getPostResponse.user?.profilePicture,
-          fullName: getPostResponse.user?.fullName,
-          followers: getPostResponse.user?.followers,
-          following: getPostResponse.user?.following,
-        },
+        user: returnUser({ user: getPostResponse.user }),
         postDate: dayjs((getPostResponse as any)?.post?.createdAt).fromNow(
           false
         ),
@@ -83,17 +74,7 @@ export const Post: RequestHandler = async (req, res, next) => {
           post: postResponse?.post?.post,
           caption: postResponse?.post?.caption,
         },
-        user: {
-          userId: postResponse.user?._id,
-          email: postResponse.user?.email,
-          username: postResponse.user?.username,
-          phoneNumber: postResponse.user?.phoneNumber,
-          countryCode: postResponse.user?.countryCode,
-          profilePicture: postResponse.user?.profilePicture,
-          fullName: postResponse.user?.fullName,
-          followers: postResponse.user?.followers,
-          following: postResponse.user?.following,
-        },
+        user: returnUser({ user: postResponse.user }),
         postDate: dayjs((postResponse as any)?.post?.createdAt).fromNow(false),
       },
     });
@@ -134,17 +115,7 @@ export const EditPost: RequestHandler = async (req, res, next) => {
           post: editPostResponse?.post?.post,
           caption: editPostResponse?.post?.caption,
         },
-        user: {
-          userId: editPostResponse.user?._id,
-          email: editPostResponse.user?.email,
-          username: editPostResponse.user?.username,
-          phoneNumber: editPostResponse.user?.phoneNumber,
-          countryCode: editPostResponse.user?.countryCode,
-          profilePicture: editPostResponse.user?.profilePicture,
-          fullName: editPostResponse.user?.fullName,
-          followers: editPostResponse.user?.followers,
-          following: editPostResponse.user?.following,
-        },
+        user: returnUser({ user: editPostResponse.user }),
         postDate: dayjs((editPostResponse as any)?.post?.createdAt).fromNow(
           false
         ),
@@ -181,17 +152,7 @@ export const DeletePost: RequestHandler = async (req, res, next) => {
           post: deletePostResponse?.post?.post,
           caption: deletePostResponse?.post?.caption,
         },
-        user: {
-          userId: deletePostResponse.user?._id,
-          email: deletePostResponse.user?.email,
-          username: deletePostResponse.user?.username,
-          phoneNumber: deletePostResponse.user?.phoneNumber,
-          countryCode: deletePostResponse.user?.countryCode,
-          profilePicture: deletePostResponse.user?.profilePicture,
-          fullName: deletePostResponse.user?.fullName,
-          followers: deletePostResponse.user?.followers,
-          following: deletePostResponse.user?.following,
-        },
+        user: returnUser({ user: deletePostResponse.user }),
         postDate: dayjs((deletePostResponse as any)?.post?.createdAt).fromNow(
           false
         ),

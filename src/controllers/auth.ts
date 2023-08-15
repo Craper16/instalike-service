@@ -25,6 +25,7 @@ import {
   verifyUserValidations,
 } from '../validations/auth';
 import { getUserFollowers, getUserFollowing } from '../services/user';
+import { returnUser } from '../helpers/user';
 
 export const SignupUser: RequestHandler = async (req, res, next) => {
   const body = req.body as UserModel;
@@ -108,17 +109,7 @@ export const SigninUser: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(signinUserResponse.status).json({
-      user: {
-        userId: signinUserResponse.user?._id,
-        email: signinUserResponse.user?.email,
-        username: signinUserResponse.user?.username,
-        phoneNumber: signinUserResponse.user?.phoneNumber,
-        countryCode: signinUserResponse.user?.countryCode,
-        profilePicture: signinUserResponse.user?.profilePicture,
-        fullName: signinUserResponse.user?.fullName,
-        followers: signinUserResponse?.user?.followers,
-        following: signinUserResponse?.user?.following,
-      },
+      user: returnUser({ user: signinUserResponse.user }),
       access_token: signinUserResponse.access_token,
       refresh_token: signinUserResponse.refresh_token,
       expires_at: signinUserResponse.expires_at,
@@ -170,17 +161,7 @@ export const VerifyUser: RequestHandler = async (req, res, next) => {
 
     if (verifyUser.access_token && verifyUser.refresh_token) {
       return res.status(200).json({
-        user: {
-          userId: verifyUser.user?._id,
-          email: verifyUser.user?.email,
-          username: verifyUser.user?.username,
-          phoneNumber: verifyUser.user?.phoneNumber,
-          countryCode: verifyUser.user?.countryCode,
-          profilePicture: verifyUser.user?.profilePicture,
-          fullName: verifyUser.user?.fullName,
-          followers: verifyUser.user?.followers,
-          following: verifyUser.user?.following,
-        },
+        user: returnUser({ user: verifyUser.user }),
         access_token: verifyUser.access_token,
         refresh_token: verifyUser.refresh_token,
         expires_at: verifyUser.expires_at,
@@ -288,17 +269,7 @@ export const ResetPassword: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(resetPasswordResponse.status).json({
-      user: {
-        userId: resetPasswordResponse.user?._id,
-        email: resetPasswordResponse.user?.email,
-        username: resetPasswordResponse.user?.username,
-        phoneNumber: resetPasswordResponse.user?.phoneNumber,
-        countryCode: resetPasswordResponse.user?.countryCode,
-        profilePicture: resetPasswordResponse.user?.profilePicture,
-        fullName: resetPasswordResponse.user?.fullName,
-        followers: resetPasswordResponse.user?.followers,
-        following: resetPasswordResponse.user?.following,
-      },
+      user: returnUser({ user: resetPasswordResponse.user }),
       message: 'Password reset successfully',
     });
   } catch (error) {
@@ -326,17 +297,7 @@ export const GetLoggedInUserData: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(getLoggedInUserDataResponse.status).json({
-      user: {
-        userId: getLoggedInUserDataResponse.user?._id,
-        email: getLoggedInUserDataResponse.user?.email,
-        username: getLoggedInUserDataResponse.user?.username,
-        phoneNumber: getLoggedInUserDataResponse.user?.phoneNumber,
-        countryCode: getLoggedInUserDataResponse.user?.countryCode,
-        profilePicture: getLoggedInUserDataResponse.user?.profilePicture,
-        fullName: getLoggedInUserDataResponse.user?.fullName,
-        followers: getLoggedInUserDataResponse.user?.followers,
-        following: getLoggedInUserDataResponse.user?.following,
-      },
+      user: returnUser({ user: getLoggedInUserDataResponse.user }),
     });
   } catch (error) {
     next(error);
@@ -389,17 +350,7 @@ export const ChangeUserPassword: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(changeUserPasswordResponse.status).json({
-      user: {
-        userId: changeUserPasswordResponse.user?._id,
-        email: changeUserPasswordResponse.user?.email,
-        username: changeUserPasswordResponse.user?.username,
-        phoneNumber: changeUserPasswordResponse.user?.phoneNumber,
-        countryCode: changeUserPasswordResponse.user?.countryCode,
-        profilePicture: changeUserPasswordResponse.user?.profilePicture,
-        fullName: changeUserPasswordResponse.user?.fullName,
-        followers: changeUserPasswordResponse.user?.followers,
-        following: changeUserPasswordResponse.user?.following,
-      },
+      user: returnUser({ user: changeUserPasswordResponse.user }),
     });
   } catch (error) {
     next(error);
@@ -442,17 +393,7 @@ export const RefreshUserTokens: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(refreshUserTokensResponse.status).json({
-      user: {
-        userId: refreshUserTokensResponse.user?._id,
-        email: refreshUserTokensResponse.user?.email,
-        username: refreshUserTokensResponse.user?.username,
-        phoneNumber: refreshUserTokensResponse.user?.phoneNumber,
-        countryCode: refreshUserTokensResponse.user?.countryCode,
-        profilePicture: refreshUserTokensResponse.user?.profilePicture,
-        fullName: refreshUserTokensResponse.user?.fullName,
-        followers: refreshUserTokensResponse.user?.followers,
-        following: refreshUserTokensResponse.user?.following,
-      },
+      user: returnUser({ user: refreshUserTokensResponse.user }),
       access_token: refreshUserTokensResponse.access_token,
       refresh_token: refreshUserTokensResponse.refresh_token,
       expires_at: refreshUserTokensResponse.expires_at,
@@ -485,17 +426,7 @@ export const EditProfilePicture: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(editProfilePictureResponse.status).json({
-      user: {
-        userId: editProfilePictureResponse.user?._id,
-        email: editProfilePictureResponse.user?.email,
-        username: editProfilePictureResponse.user?.username,
-        phoneNumber: editProfilePictureResponse.user?.phoneNumber,
-        countryCode: editProfilePictureResponse.user?.countryCode,
-        profilePicture: editProfilePictureResponse.user?.profilePicture,
-        fullName: editProfilePictureResponse.user?.fullName,
-        followers: editProfilePictureResponse.user?.followers,
-        following: editProfilePictureResponse.user?.following,
-      },
+      user: returnUser({ user: editProfilePictureResponse.user }),
     });
   } catch (error) {
     next(error);
@@ -522,17 +453,7 @@ export const RemoveProfilePicture: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(removeProfilePictureResponse.status).json({
-      user: {
-        userId: removeProfilePictureResponse.user?._id,
-        email: removeProfilePictureResponse.user?.email,
-        username: removeProfilePictureResponse.user?.username,
-        phoneNumber: removeProfilePictureResponse.user?.phoneNumber,
-        countryCode: removeProfilePictureResponse.user?.countryCode,
-        profilePicture: removeProfilePictureResponse.user?.profilePicture,
-        fullName: removeProfilePictureResponse.user?.fullName,
-        followers: removeProfilePictureResponse.user?.followers,
-        following: removeProfilePictureResponse.user?.following,
-      },
+      user: returnUser({ user: removeProfilePictureResponse.user }),
     });
   } catch (error) {
     next(error);
@@ -585,17 +506,7 @@ export const EditUserProfile: RequestHandler = async (req, res, next) => {
     }
 
     return res.status(editUserProfileResponse.status).json({
-      user: {
-        userId: editUserProfileResponse.user?._id,
-        email: editUserProfileResponse.user?.email,
-        username: editUserProfileResponse.user?.username,
-        phoneNumber: editUserProfileResponse.user?.phoneNumber,
-        countryCode: editUserProfileResponse.user?.countryCode,
-        profilePicture: editUserProfileResponse.user?.profilePicture,
-        fullName: editUserProfileResponse.user?.fullName,
-        followers: editUserProfileResponse.user?.followers,
-        following: editUserProfileResponse.user?.following,
-      },
+      user: returnUser({ user: editUserProfileResponse.user }),
       message: 'Changes saved successfully',
     });
   } catch (error) {
