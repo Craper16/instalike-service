@@ -3,7 +3,7 @@ import { deletePost, editPost, getPost, post } from '../services/post';
 import { ErrorResponse } from '..';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
-import { returnUser } from '../helpers/user';
+import { returnPost } from '../helpers/post';
 dayjs.extend(relativeTime);
 
 export const GetPost: RequestHandler = async (req, res, next) => {
@@ -25,18 +25,13 @@ export const GetPost: RequestHandler = async (req, res, next) => {
       throw error;
     }
 
+    const post = await returnPost({
+      post: getPostResponse.post,
+      userId: req.userId,
+    });
+
     return res.status(getPostResponse?.status).json({
-      post: {
-        postId: getPostResponse?.post?._id,
-        post: {
-          post: getPostResponse?.post?.post,
-          caption: getPostResponse?.post?.caption,
-        },
-        user: returnUser({ user: getPostResponse.user }),
-        postDate: dayjs((getPostResponse as any)?.post?.createdAt).fromNow(
-          false
-        ),
-      },
+      post,
     });
   } catch (error) {
     next(error);
@@ -67,16 +62,13 @@ export const Post: RequestHandler = async (req, res, next) => {
       throw error;
     }
 
+    const postReturned = await returnPost({
+      post: postResponse.post,
+      userId: req.userId,
+    });
+
     return res.status(postResponse?.status).json({
-      post: {
-        postId: postResponse?.post?._id,
-        post: {
-          post: postResponse?.post?.post,
-          caption: postResponse?.post?.caption,
-        },
-        user: returnUser({ user: postResponse.user }),
-        postDate: dayjs((postResponse as any)?.post?.createdAt).fromNow(false),
-      },
+      post: postReturned,
     });
   } catch (error) {
     next(error);
@@ -108,18 +100,13 @@ export const EditPost: RequestHandler = async (req, res, next) => {
       throw error;
     }
 
+    const post = await returnPost({
+      post: editPostResponse.post,
+      userId: req.userId,
+    });
+
     return res.status(editPostResponse?.status).json({
-      post: {
-        postId: editPostResponse?.post?._id,
-        post: {
-          post: editPostResponse?.post?.post,
-          caption: editPostResponse?.post?.caption,
-        },
-        user: returnUser({ user: editPostResponse.user }),
-        postDate: dayjs((editPostResponse as any)?.post?.createdAt).fromNow(
-          false
-        ),
-      },
+      post,
     });
   } catch (error) {
     next(error);
@@ -145,18 +132,13 @@ export const DeletePost: RequestHandler = async (req, res, next) => {
       throw error;
     }
 
+    const post = await returnPost({
+      post: deletePostResponse.post,
+      userId: req.userId,
+    });
+
     return res.status(deletePostResponse?.status).json({
-      post: {
-        postId: deletePostResponse?.post?._id,
-        post: {
-          post: deletePostResponse?.post?.post,
-          caption: deletePostResponse?.post?.caption,
-        },
-        user: returnUser({ user: deletePostResponse.user }),
-        postDate: dayjs((deletePostResponse as any)?.post?.createdAt).fromNow(
-          false
-        ),
-      },
+      post,
     });
   } catch (error) {
     next(error);

@@ -1,7 +1,7 @@
 import { Schema, Types, model, PaginateModel } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 
-interface PostModel {
+export interface PostModel {
   userId: any;
   post: string[];
   caption: string;

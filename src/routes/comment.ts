@@ -4,10 +4,13 @@ import {
   DeleteComment,
   EditComment,
   GetComment,
+  GetPostComments,
   PostComment,
 } from '../controllers/comment';
 
 const router = Router();
+
+router.get('/', isAuth, GetPostComments);
 
 router.get('/:commentId', isAuth, GetComment);
 

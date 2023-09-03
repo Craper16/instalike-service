@@ -14,6 +14,8 @@ import * as jose from 'jose';
 import { BlackListedToken } from '../models/blacklistedToken';
 import { REFRESH_TOKEN } from '../consts/constants';
 import dayjs from 'dayjs';
+import { s3 } from '../routes/auth';
+import { ManagedUpload } from 'aws-sdk/clients/s3';
 
 export const signUp = async ({
   countryCode,
@@ -593,32 +595,53 @@ export const editUserProfilePicture = async ({
       };
     }
 
-    const readableStream = new Readable();
-    readableStream.push(profilePicture.buffer);
-    readableStream.push(null);
+    let imageData: ManagedUpload.SendData = {
+      Bucket: '',
+      ETag: '',
+      Key: '',
+      Location: '',
+    };
+    let uploadError;
 
-    const uploadStream = bucket.openUploadStream(user._id.toString());
-    const id = uploadStream.id;
+    await s3
+      .upload(
+        {
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: profilePicture.originalname,
+          Body: profilePicture.buffer,
+          ContentType: 'image/jpeg',
+          ACL: 'public-read-write',
+        },
+        (error, data) => {
+          if (error) {
+            uploadError = {
+              message: error.message,
+              status: 403,
+              name: error.name,
+            };
 
-    readableStream.pipe(uploadStream);
+            return uploadError;
+          }
 
-    const uploadPromise = new Promise((resolve, reject) => {
-      uploadStream.on('error', () => {
-        reject({
-          message: 'Could not upload file to S3',
-          status: 403,
-          name: 'Upload Failed',
-        });
-      });
+          return (imageData = data);
+        }
+      )
+      .promise()
+      .then((data) => (imageData = data))
+      .catch(
+        (error) =>
+          (uploadError = {
+            message: error.message,
+            status: 403,
+            name: error.name,
+          })
+      );
 
-      uploadStream.on('finish', () => {
-        resolve(() => {});
-      });
-    });
+    if (uploadError) {
+      return uploadError;
+    }
 
-    await uploadPromise;
-
-    const imgUrl = `http://192.168.1.113:5051/file/${id}`;
+    const imgUrl = imageData?.Location;
     user.profilePicture = imgUrl;
     const result = await user.save();
 
@@ -647,7 +670,7 @@ export const removeUserProfilePicture = async ({
       };
     }
 
-    user.profilePicture = null as any;
+    user.profilePicture = undefined as any;
 
     const result = await user.save();
 

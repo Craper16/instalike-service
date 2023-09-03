@@ -2,6 +2,9 @@ import { Readable } from 'stream';
 import { User } from '../models/user';
 import { bucket } from '..';
 import { Post } from '../models/post';
+import { Comment } from '../models/comment';
+import { Like } from '../models/like';
+import { s3 } from '../routes/auth';
 
 export const getPost = async ({ postId }: { postId: string }) => {
   try {
@@ -25,7 +28,13 @@ export const getPost = async ({ postId }: { postId: string }) => {
       };
     }
 
-    return { status: 200, post: post, user };
+    const comments = await Comment.paginate({ postId: post._id });
+    const likes = await Like.paginate({ postId: post._id });
+
+    const commentsTotal = comments.totalDocs;
+    const likesTotal = likes.totalDocs;
+
+    return { status: 200, post: post, user, commentsTotal, likesTotal };
   } catch (error) {
     console.error(error);
   }
@@ -59,32 +68,23 @@ export const post = async ({
     }
 
     const uploadPromise = posts.map(async (post) => {
-      const readableStream = new Readable();
-      readableStream.push(post.buffer);
-      readableStream.push(null);
-
-      const uploadStream = bucket.openUploadStream(post.filename);
-      const id = uploadStream.id;
-
-      readableStream.pipe(uploadStream);
-
-      const uploadPromise = new Promise((resolve, reject) => {
-        uploadStream.on('error', () => {
-          reject({
-            message: 'Could not upload file to S3',
+      return await s3
+        .upload({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: post.originalname,
+          Body: post.buffer,
+          ContentType: 'image/jpeg',
+          ACL: 'public-read-write',
+        })
+        .promise()
+        .then((data) => data.Location)
+        .catch((error) => {
+          return {
+            message: error.message,
             status: 403,
-            name: 'Upload Failed',
-          });
+            name: error.name,
+          };
         });
-
-        uploadStream.on('finish', () => {
-          resolve(() => {});
-        });
-      });
-
-      await uploadPromise;
-
-      return `http://192.168.1.113:5051/file/${id}`;
     });
 
     const postsResponse = await Promise.all(uploadPromise);
@@ -97,7 +97,7 @@ export const post = async ({
 
     const result = await post.save();
 
-    return { status: 201, post: result, user };
+    return { status: 201, post: result, user, commentsTotal: 0, likesTotal: 0 };
   } catch (error) {
     console.error(error);
   }
@@ -151,42 +151,41 @@ export const editPost = async ({
     }
 
     const uploadPromise = posts.map(async (post) => {
-      const readableStream = new Readable();
-      readableStream.push(post.buffer);
-      readableStream.push(null);
-
-      const uploadStream = bucket.openUploadStream(post.filename);
-      const id = uploadStream.id;
-
-      readableStream.pipe(uploadStream);
-
-      const uploadPromise = new Promise((resolve, reject) => {
-        uploadStream.on('error', () => {
-          reject({
-            message: 'Could not upload file to S3',
+      return await s3
+        .upload({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: post.originalname,
+          Body: post.buffer,
+          ContentType: 'image/jpeg',
+          ACL: 'public-read-write',
+        })
+        .promise()
+        .then((data) => {
+          return data.Location;
+        })
+        .catch((error) => {
+          return {
+            message: error.message,
             status: 403,
-            name: 'Upload Failed',
-          });
+            name: error.name,
+          };
         });
-
-        uploadStream.on('finish', () => {
-          resolve(() => {});
-        });
-      });
-
-      await uploadPromise;
-
-      return `http://192.168.1.113:5051/file/${id}`;
     });
 
     const postsResponse = await Promise.all(uploadPromise);
 
-    post.post = postsResponse;
+    post.post = postsResponse as string[];
     post.caption = caption;
 
     const result = await post.save();
 
-    return { status: 200, post: result, user };
+    const comments = await Comment.paginate({ postId: post._id });
+    const likes = await Like.paginate({ postId: post._id });
+
+    const commentsTotal = comments.totalDocs;
+    const likesTotal = likes.totalDocs;
+
+    return { status: 200, post: result, user, commentsTotal, likesTotal };
   } catch (error) {
     console.error(error);
   }
@@ -201,7 +200,7 @@ export const deletePost = async ({
 }) => {
   try {
     const user = await User.findById(userId);
-    const post = await Post.findById(postId);
+    const post = await Post.findByIdAndDelete(postId);
 
     if (!user) {
       return {
@@ -227,9 +226,13 @@ export const deletePost = async ({
       };
     }
 
-    const result = await Post.findByIdAndDelete(post._id);
+    const comments = await Comment.paginate({ postId: post._id });
+    const likes = await Like.paginate({ postId: post._id });
 
-    return { status: 200, post: result, user };
+    const commentsTotal = comments.totalDocs;
+    const likesTotal = likes.totalDocs;
+
+    return { status: 200, post, user, commentsTotal, likesTotal };
   } catch (error) {
     console.error(error);
   }

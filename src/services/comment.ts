@@ -1,6 +1,8 @@
+import { PER_PAGE } from '../consts/constants';
 import { Comment } from '../models/comment';
 import { Post } from '../models/post';
 import { User } from '../models/user';
+import { returnComment } from '../helpers/comment';
 
 export const postComment = async ({
   comment,
@@ -31,16 +33,6 @@ export const postComment = async ({
       };
     }
 
-    const postUser = await User.findById(post.userId);
-
-    if (!postUser) {
-      return {
-        message: "User doesn't exist",
-        name: 'Not Found',
-        status: 404,
-      };
-    }
-
     const uploadedComment = new Comment({
       comment,
       edited: false,
@@ -50,7 +42,7 @@ export const postComment = async ({
 
     const result = await uploadedComment.save();
 
-    return { status: 201, comment: result, user, post, postUser };
+    return { status: 201, comment: result };
   } catch (error) {
     console.error(error);
   }
@@ -86,17 +78,8 @@ export const getComment = async ({ commentId }: { commentId: string }) => {
         status: 404,
       };
     }
-    const postUser = await User.findById(post.userId);
 
-    if (!postUser) {
-      return {
-        message: "User doesn't exist",
-        name: 'Not Found',
-        status: 404,
-      };
-    }
-
-    return { status: 200, comment, user, post, postUser };
+    return { status: 200, comment, user, post };
   } catch (error) {
     console.error(error);
   }
@@ -139,22 +122,12 @@ export const editComment = async ({
       };
     }
 
-    const postUser = await User.findById(post.userId);
-
-    if (!postUser) {
-      return {
-        message: "User doesn't exist",
-        name: 'Not Found',
-        status: 404,
-      };
-    }
-
     commentToEdit.comment = comment;
     commentToEdit.edited = true;
 
     const result = await commentToEdit.save();
 
-    return { status: 200, comment: result, user, post, postUser };
+    return { status: 200, comment: result, user, post };
   } catch (error) {
     console.error(error);
   }
@@ -191,17 +164,46 @@ export const deleteComment = async ({ commentId }: { commentId: string }) => {
       };
     }
 
-    const postUser = await User.findById(post.userId);
+    return { status: 200, comment, user, post };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-    if (!postUser) {
+export const getPostComments = async ({
+  page,
+  postId,
+  userId,
+}: {
+  postId: string;
+  page: number;
+  userId: string;
+}) => {
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
       return {
-        message: "User doesn't exist",
+        message: "Post doesn't exist",
         name: 'Not Found',
         status: 404,
       };
     }
 
-    return { status: 200, comment, user, post, postUser };
+    const comments = await Comment.paginate(
+      { postId: post._id },
+      { limit: PER_PAGE, page, sort: { updatedAt: -1 } }
+    );
+
+    const commentsResponse = comments.docs.map(async (comment) => {
+      const commentReturned = await returnComment({ comment, userId });
+
+      return commentReturned;
+    });
+
+    const docs = await Promise.all(commentsResponse);
+
+    return { status: 200, comments: { ...comments, docs } };
   } catch (error) {
     console.error(error);
   }

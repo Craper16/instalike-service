@@ -16,8 +16,29 @@ import {
 } from '../controllers/auth';
 import multer, { memoryStorage } from 'multer';
 import { isAuth } from '../middlewares/isAuth';
+import Aws from 'aws-sdk';
 
-export const upload = multer({ storage: memoryStorage() });
+export const upload = multer({
+  storage: memoryStorage(),
+  fileFilter(req, file, callback) {
+    if (
+      file.mimetype === 'image/jpeg' ||
+      file.mimetype === 'image/jpg' ||
+      file.mimetype === 'image/png'
+    ) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+});
+
+export const s3 = new Aws.S3({
+  credentials: {
+    accessKeyId: process.env.AWS_S3_ID,
+    secretAccessKey: process.env.AWS_S3_SECRET,
+  },
+});
 
 const router = Router();
 

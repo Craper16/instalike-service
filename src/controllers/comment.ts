@@ -5,10 +5,10 @@ import {
   deleteComment,
   editComment,
   getComment,
+  getPostComments,
   postComment,
 } from '../services/comment';
-import dayjs from 'dayjs';
-import { returnUser } from '../helpers/user';
+import { returnComment } from '../helpers/comment';
 
 export const PostComment: RequestHandler = async (req, res, next) => {
   const { comment } = req.body as { comment: string };
@@ -50,27 +50,13 @@ export const PostComment: RequestHandler = async (req, res, next) => {
       throw error;
     }
 
+    const commentReturned = await returnComment({
+      comment: postCommentResponse.comment,
+      userId: req.userId,
+    });
+
     return res.status(postCommentResponse.status).json({
-      comment: {
-        commentId: postCommentResponse.comment?._id,
-        comment: postCommentResponse.comment?.comment,
-        isEditted: postCommentResponse.comment?.edited,
-        user: returnUser({ user: postCommentResponse.user }),
-        post: {
-          postId: postCommentResponse?.post?._id,
-          post: {
-            post: postCommentResponse?.post?.post,
-            caption: postCommentResponse?.post?.caption,
-          },
-          user: returnUser({ user: postCommentResponse.postUser }),
-          postDate: dayjs(
-            (postCommentResponse as any)?.post?.createdAt
-          ).fromNow(false),
-        },
-        commentedAt: dayjs(
-          (postCommentResponse as any).comment.updatedAt
-        ).fromNow(false),
-      },
+      comment: commentReturned,
     });
   } catch (error) {
     next(error);
@@ -95,27 +81,13 @@ export const GetComment: RequestHandler = async (req, res, next) => {
       throw error;
     }
 
+    const comment = await returnComment({
+      comment: getCommentResponse.comment,
+      userId: req.userId,
+    });
+
     return res.status(getCommentResponse.status).json({
-      comment: {
-        commentId: getCommentResponse.comment?._id,
-        comment: getCommentResponse.comment?.comment,
-        isEditted: getCommentResponse.comment?.edited,
-        user: returnUser({ user: getCommentResponse.user }),
-        post: {
-          postId: getCommentResponse?.post?._id,
-          post: {
-            post: getCommentResponse?.post?.post,
-            caption: getCommentResponse?.post?.caption,
-          },
-          user: returnUser({ user: getCommentResponse.postUser }),
-          postDate: dayjs((getCommentResponse as any)?.post?.createdAt).fromNow(
-            false
-          ),
-        },
-        commentedAt: dayjs(
-          (getCommentResponse as any).comment.updatedAt
-        ).fromNow(false),
-      },
+      comment,
     });
   } catch (error) {
     next(error);
@@ -158,27 +130,13 @@ export const EditComment: RequestHandler = async (req, res, next) => {
       throw error;
     }
 
+    const commentReturned = await returnComment({
+      comment: editCommentResponse.comment,
+      userId: req.userId,
+    });
+
     return res.status(editCommentResponse.status).json({
-      comment: {
-        commentId: editCommentResponse.comment?._id,
-        comment: editCommentResponse.comment?.comment,
-        isEditted: editCommentResponse.comment?.edited,
-        user: returnUser({ user: editCommentResponse.user }),
-        post: {
-          postId: editCommentResponse?.post?._id,
-          post: {
-            post: editCommentResponse?.post?.post,
-            caption: editCommentResponse?.post?.caption,
-          },
-          user: returnUser({ user: editCommentResponse.postUser }),
-          postDate: dayjs(
-            (editCommentResponse as any)?.post?.createdAt
-          ).fromNow(false),
-        },
-        commentedAt: dayjs(
-          (editCommentResponse as any).comment.updatedAt
-        ).fromNow(false),
-      },
+      comment: commentReturned,
     });
   } catch (error) {
     next(error);
@@ -204,28 +162,45 @@ export const DeleteComment: RequestHandler = async (req, res, next) => {
       throw error;
     }
 
-    return res.status(deleteCommentResponse.status).json({
-      comment: {
-        commentId: deleteCommentResponse.comment?._id,
-        comment: deleteCommentResponse.comment?.comment,
-        isEditted: deleteCommentResponse.comment?.edited,
-        user: returnUser({ user: deleteCommentResponse.user }),
-        post: {
-          postId: deleteCommentResponse?.post?._id,
-          post: {
-            post: deleteCommentResponse?.post?.post,
-            caption: deleteCommentResponse?.post?.caption,
-          },
-          user: returnUser({ user: deleteCommentResponse.postUser }),
-          postDate: dayjs(
-            (deleteCommentResponse as any)?.post?.createdAt
-          ).fromNow(false),
-        },
-        commentedAt: dayjs(
-          (deleteCommentResponse as any).comment.updatedAt
-        ).fromNow(false),
-      },
+    const commentReturned = await returnComment({
+      comment: deleteCommentResponse.comment,
+      userId: req.userId,
     });
+
+    return res.status(deleteCommentResponse.status).json({
+      comment: commentReturned,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetPostComments: RequestHandler = async (req, res, next) => {
+  const { page, post } = req.query as { post: string; page: string };
+
+  try {
+    const postCommentsResponse = await getPostComments({
+      page: +page ?? 1,
+      postId: post,
+      userId: req.userId,
+    });
+
+    if (postCommentsResponse?.status !== 200) {
+      const error: ErrorResponse = {
+        message: postCommentsResponse?.name!,
+        name: postCommentsResponse?.name!,
+        status: postCommentsResponse?.status!,
+        data: {
+          message: postCommentsResponse?.message!,
+          statusCode: postCommentsResponse?.status!,
+        },
+      };
+      throw error;
+    }
+
+    return res
+      .status(postCommentsResponse.status)
+      .json({ comments: postCommentsResponse.comments });
   } catch (error) {
     next(error);
   }

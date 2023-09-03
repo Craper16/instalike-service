@@ -1,8 +1,7 @@
-import dayjs from 'dayjs';
 import { PER_PAGE } from '../consts/constants';
 import { Post } from '../models/post';
 import { User } from '../models/user';
-import { returnUser } from '../helpers/user';
+import { returnPost } from '../helpers/post';
 
 export const followUser = async ({
   userId,
@@ -292,17 +291,9 @@ export const getUserPosts = async ({
     );
 
     const postsReponse = posts.docs.map(async (post) => {
-      const user = await User.findById(post.userId);
+      const postReturned = await returnPost({ post });
 
-      return {
-        postId: post?._id,
-        post: {
-          post: post?.post,
-          caption: post?.caption,
-        },
-        user: returnUser({ user }),
-        postDate: dayjs((post as any)?.createdAt).fromNow(false),
-      };
+      return postReturned;
     });
 
     const docs = await Promise.all(postsReponse);

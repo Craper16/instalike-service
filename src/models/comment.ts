@@ -1,7 +1,7 @@
 import { Schema, Types, model, PaginateModel } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 
-interface CommentModel {
+export interface CommentModel {
   postId: any;
   userId: any;
   comment: string;

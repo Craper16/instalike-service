@@ -1,32 +1,21 @@
-import { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
 import { User } from '../models/user';
+import { returnUser } from '../helpers/user';
 
-interface IUser {
-  userId: ObjectId;
-  username: string;
-  fullName: string;
-  email: string;
-  countryCode: string;
-  phoneNumber: number;
-  profilePicture: string;
-  followers: string[];
-  following: string[];
-}
-
-export async function userData(userId: string): Promise<IUser> {
+export async function userData(userId: string): Promise<{
+  userId: Types.ObjectId | undefined;
+  email: string | undefined;
+  username: string | undefined;
+  phoneNumber: number | undefined;
+  countryCode: string | undefined;
+  profilePicture: String | undefined;
+  fullName: string | undefined;
+  followers: string[] | undefined;
+  following: string[] | undefined;
+}> {
   const user = await User.findById(userId);
 
-  return {
-    userId: user?._id! as any,
-    countryCode: user?.countryCode!,
-    email: user?.email!,
-    fullName: user?.fullName!,
-    phoneNumber: user?.phoneNumber!,
-    profilePicture: user?.profilePicture! as any,
-    username: user?.username!,
-    followers: user?.followers!,
-    following: user?.following!,
-  };
+  return returnUser({ user });
 }
 
 export const searchUsers = async ({
@@ -58,7 +47,7 @@ export const searchUsers = async ({
 
     return {
       users: usersToReturn.filter(
-        (user) => user.userId.toString() !== userId.toString()
+        (user) => user?.userId?.toString() !== userId.toString()
       ),
       status: 200,
     };

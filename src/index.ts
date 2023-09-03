@@ -18,6 +18,7 @@ import searchRoutes from './routes/search';
 import followRoutes from './routes/user';
 import postRoutes from './routes/post';
 import commentRoutes from './routes/comment';
+import likeRoutes from './routes/like';
 import { createTransport } from 'nodemailer';
 import * as jose from 'jose';
 import { GridFsStorage } from 'multer-gridfs-storage';
@@ -72,6 +73,7 @@ app.use('/api/search', searchRoutes);
 app.use('/api/user', followRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/comment', commentRoutes);
+app.use('/api/like', likeRoutes);
 
 app.use('*', (req: Request, res: Response) => {
   return res.status(404).json({ message: 'Endpoint does not exist' });

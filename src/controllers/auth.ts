@@ -182,7 +182,6 @@ export const ResendVerificationCode: RequestHandler = async (
   res,
   next
 ) => {
-  console.log('Hitting');
   const { email } = req.body as { email: string };
 
   const { error } = resendVerificationValidation.validate(req.body);
