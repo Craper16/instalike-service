@@ -40,7 +40,7 @@ export const generateRefreshToken = async (jwtSignData: userJwtSignData) => {
 };
 
 export const blacklistRefresh_Token = async (refresh_token: string) => {
-  const blackListedToken = await new BlackListedToken({
+  const blackListedToken = new BlackListedToken({
     blackListedToken: refresh_token,
   });
 

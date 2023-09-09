@@ -291,7 +291,7 @@ export const getUserPosts = async ({
     );
 
     const postsReponse = posts.docs.map(async (post) => {
-      const postReturned = await returnPost({ post });
+      const postReturned = await returnPost({ post, userId: user.id });
 
       return postReturned;
     });

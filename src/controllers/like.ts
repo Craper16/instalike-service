@@ -54,8 +54,6 @@ export const RemoveLike: RequestHandler = async (req, res, next) => {
       postId: post,
     });
 
-    console.log(removeLikeResponse, 'RSPONSE');
-
     if (removeLikeResponse?.status !== 200) {
       const error: ErrorResponse = {
         message: removeLikeResponse?.name!,
